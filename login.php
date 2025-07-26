@@ -14,37 +14,32 @@ include('config.php');
 <body>
 
 <?php
-session_start();
-echo $_SESSION['userName'];
-echo $_SESSION['userEmail'];
-
-// unset($_SESSION['userName']);
-session_destroy();
-
 if(isset($_POST['submit'])){
 
-    $name = $_POST['name'];
     $email = $_POST['email'];
     $pass = $_POST['pass'];
-    
-    $query = "INSERT INTO `users` (`name` , `email` , `password`) VALUES ('$name' , '$email' , '$pass')";
-    
-    $result = mysqli_query($connection , $query);
-    if($result){
-        echo "<script>alert('Registration Successful')
-        window.location.href = 'users.php';
+
+    $db_check = "SELECT * FROM `users` where `email` = '$email' AND `password` = '$pass'";
+    $result = mysqli_query($connection, $db_check);
+    // print_r($result);
+    if(mysqli_num_rows($result) > 0){
+        $row = mysqli_fetch_assoc($result);
+        session_start();
+        $_SESSION['user_id'] = $row['id'];
+        $_SESSION['email'] = $row['email'];
+       echo "<script>
+        window.location.href = 'users.php'
         </script>";
     }
+
+
 }
 ?>
     
 <div class="container">
-<h1>Registration Form</h1>
+<h1>Login Form</h1>
 
 <form class="form-group" action="<?php $_SERVER['PHP_SELF'] ?>" method="post">
-        
-            <label for="name">Name</label>
-            <input class="form-control m-3" type="text" name="name">
         
         <label for="email">Email</label>
         <input class="form-control m-3" type="email" name="email">
@@ -52,7 +47,7 @@ if(isset($_POST['submit'])){
         <label for="pass">Password</label>
         <input class="form-control m-3" type="password" name="pass">
     
-        <input type="Submit" name="submit" value="Submit" class="btn btn-primary">
+        <input type="Submit" name="submit" value="Sign In" class="btn btn-primary">
     </div>
 </form>
 
